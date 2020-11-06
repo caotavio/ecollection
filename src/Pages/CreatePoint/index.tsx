@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../../services/api';
 
 import './styles.css'
 
@@ -7,7 +8,24 @@ import logo from '../../assets/logo.svg'
 import { FiArrowLeft } from 'react-icons/fi';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 
+// Whenever you need to create state for an array or an object we need to manually inform
+// the type of the variables that are being stored.
+
+interface Item {
+  id: number;
+  title: string;
+  image_url: string;
+}
+
 const CreatePoint = () => {
+  const [items, setItems] = useState<Item[]>([]);
+
+  useEffect(() => {
+    api.get('items').then(response => {
+      setItems(response.data);
+    })
+  }, []);
+  
   return (
     <div id="page-create-point">
       <header>
@@ -92,30 +110,14 @@ const CreatePoint = () => {
           </legend>
 
           <ul className="items-grid">
-            <li>
-              <img src="http://localhost:3333/uploads/bateries.svg" alt="Test"/>
-              <span>Bateries</span>
-            </li>
-            <li className="selected">
-              <img src="http://localhost:3333/uploads/bateries.svg" alt="Test"/>
-              <span>Bateries</span>
-            </li>
-            <li>
-              <img src="http://localhost:3333/uploads/bateries.svg" alt="Test"/>
-              <span>Bateries</span>
-            </li>
-            <li>
-              <img src="http://localhost:3333/uploads/bateries.svg" alt="Test"/>
-              <span>Bateries</span>
-            </li>
-            <li>
-              <img src="http://localhost:3333/uploads/bateries.svg" alt="Test"/>
-              <span>Bateries</span>
-            </li>
-            <li>
-              <img src="http://localhost:3333/uploads/bateries.svg" alt="Test"/>
-              <span>Bateries</span>
-            </li>
+            {items.map(item => {
+              return (
+                <li key={item.id}>
+                  <img src={item.image_url} alt={item.title}/>
+                  <span>{item.title}</span>
+                </li>
+              );
+            })}
           </ul>
         </fieldset>
       </form>
